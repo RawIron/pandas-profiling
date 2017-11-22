@@ -5,7 +5,6 @@ import multiprocessing
 from functools import partial
 import numpy as np
 import pandas as pd
-import formatters
 
 
 def pretty_name(x):
@@ -80,8 +79,6 @@ def describe_numeric_1d(series, **kwargs):
     stats['type'] = "NUM"
     stats['n_zeros'] = (len(series) - np.count_nonzero(series))
     stats['p_zeros'] = stats['n_zeros'] / len(series)
-    # Histograms
-    stats['histogram'] = None
     return pd.Series(stats, name=series.name)
 
 
@@ -89,8 +86,6 @@ def describe_date_1d(series):
     stats = {'min': series.min(), 'max': series.max()}
     stats['range'] = stats['max'] - stats['min']
     stats['type'] = "DATE"
-    stats['histogram'] = histogram(series)
-    stats['mini_histogram'] = mini_histogram(series)
     return pd.Series(stats, name=series.name)
 
 
@@ -224,10 +219,6 @@ def describe(df, bins=10, check_correlation=True, correlation_overrides=None, po
     table_stats = {'n': len(df), 'nvar': len(df.columns)}
     table_stats['total_missing'] = variable_stats.loc['n_missing'].sum() / (table_stats['n'] * table_stats['nvar'])
     table_stats['n_duplicates'] = sum(df.duplicated())
-
-    memsize = df.memory_usage(index=True).sum()
-    table_stats['memsize'] = formatters.fmt_bytesize(memsize)
-    table_stats['recordsize'] = formatters.fmt_bytesize(memsize / table_stats['n'])
 
     table_stats.update({k: 0 for k in ("NUM", "DATE", "CONST", "CAT", "UNIQUE", "CORR", "RECODED", "BOOL")})
     table_stats.update(dict(variable_stats.loc['type'].value_counts()))
