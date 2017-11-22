@@ -1,6 +1,7 @@
 import codecs
 from .templates import template
-from .base import describe, to_html
+from .base import describe
+from .output import to_html
 
 NO_OUTPUTFILE = "pandas_profiling.no_outputfile"
 DEFAULT_OUTPUTFILE = "pandas_profiling.default_outputfile"
